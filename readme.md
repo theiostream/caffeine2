@@ -88,7 +88,7 @@ make sure main bundle was SpringBoard, and then I checked for the
 be declared in these conditions.
 
 ## Credits: ##
-<b>Maximus</b> for all the support
-<b>conradev & TheZimm</b> for display stacks
-<b>rpetrich</b> for AppList support
-<b>ComingWinter</b> for hacking my site and annoying me like hell.
+<b>Maximus</b> for all the support<br>
+<b>conradev & TheZimm</b> for display stacks<br>
+<b>rpetrich</b> for AppList support<br>
+<b>TheBigBoss repo</b> for hosting all my tweaks.
