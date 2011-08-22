@@ -12,14 +12,9 @@ entry = {
   	{
   	  items = (
   	    {
-  	      cell = PSSwitchCell;
-  	      default = 1;
-  	      defaults = "am.theiostre.caffeine2";
-  	      key = "ActiEnabled";
-  	      label = "Enable Activator";
   	    }
   	  );
-  	  "footer-title" = "Enables Activator action for switching autolock on/off (Caffeine 1 functionality)";
+  	  "footer-title" = "Just head to Activator to set an action to trigger autolocking (Caffeine 1 feature)";
   	},
   	{
   	  title = "System Applications";
