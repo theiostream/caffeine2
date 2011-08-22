@@ -3,7 +3,7 @@
 ## QA ##
 ### How it differs from Caffeine 1? ###
 It adds a main new feature: the capability to use <a 
-href="http://github.com/rpetrich/applist>the AppList framework</a> in 
+href="http://github.com/rpetrich/applist">the AppList framework</a> in 
 order to select which apps have autolock triggered.
 
 ### I still don't get it ###
