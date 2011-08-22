@@ -1,0 +1,40 @@
+entry = {
+  bundle = AppList;
+  cell = PSLinkCell;
+  icon = "/Library/PreferenceLoader/Preferences/meh.png";
+  isController = 1;
+  label = Caffeine;
+  ALSettingsPath = "/var/mobile/Library/Preferences/am.theiostre.caffeine2.plist";
+  ALSettingsKeyPrefix = "CaffeineIsOn-";
+  ALChangeNotification = "am.theiostre.caffeine2.settingschanged";
+  ALAllowsSelection = 1;
+  ALSectionDescriptors = (
+  	{
+  	  items = (
+  	    {
+  	      cell = PSSwitchCell;
+  	      default = 1;
+  	      defaults = "am.theiostre.caffeine2";
+  	      key = "ActiEnabled";
+  	      label = "Enable Activator";
+  	    }
+  	  );
+  	  "footer-title" = "Enables Activator action for switching autolock on/off (Caffeine 1 functionality)";
+  	},
+  	{
+  	  title = "System Applications";
+  	  predicate = "(isSystemApplication = TRUE)";
+  	  "cell-class-name" = "ALSwitchCell";
+  	  "icon-size" = 29;
+  	  "suppress-hidden-apps" = 1;
+  	},
+  	{
+  	  title = "User Applications";
+  	  predicate = "(isSystemApplication = FALSE)";
+  	  "cell-class-name" = "ALSwitchCell";
+  	  "icon-size" = 29;
+  	  "suppress-hidden-apps" = 1;
+  	  "footer-title" = "Note that Caffeine /will/ be enabled perpetually on these applications, with no on/off toggle.";
+  	}
+  );
+};
