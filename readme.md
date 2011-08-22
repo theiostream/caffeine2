@@ -65,7 +65,7 @@ href="http://github.com/rpetrich/applist">applist</a>'s source and <a
 href="http://github.com/rpetrich/fullforce">FullForce</a>'s.
 
 ### Display Stacks? ###
-Thanks to <a href="http://kramerapps.com"Conrad Kramer (conradev)</a> I 
+Thanks to <a href="http://kramerapps.com">Conrad Kramer (conradev)</a> I 
 managed to implement something called <b>Display Stacks</b> on my code. 
 It means you can get some info on the applications running on your 
 device, such as the topApplication, which can be retrieved with <code>- 
