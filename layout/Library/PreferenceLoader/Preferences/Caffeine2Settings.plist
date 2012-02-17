@@ -1,7 +1,7 @@
 entry = {
   bundle = AppList;
   cell = PSLinkCell;
-  icon = "/Library/PreferenceLoader/Preferences/meh.png";
+  icon = "/Library/PreferenceLoader/Preferences/no_icon.png";
   isController = 1;
   label = Caffeine;
   ALSettingsPath = "/var/mobile/Library/Preferences/am.theiostre.caffeine2.plist";
@@ -9,13 +9,6 @@ entry = {
   ALChangeNotification = "am.theiostre.caffeine2.settingschanged";
   ALAllowsSelection = 1;
   ALSectionDescriptors = (
-  	{
-  	  items = (
-  	    {
-  	    }
-  	  );
-  	  "footer-title" = "Just head to Activator to set an action to trigger autolocking (Caffeine 1 feature)";
-  	},
   	{
   	  title = "System Applications";
   	  predicate = "(isSystemApplication = TRUE)";

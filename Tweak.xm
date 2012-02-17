@@ -60,6 +60,7 @@ static BOOL caffeineIsOn = NO;
 		if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"])
 			if (!caffeineIsOn) %orig;
 	}
+	
 }
 %end
 
@@ -78,6 +79,6 @@ static BOOL caffeineIsOn = NO;
 
 +(void)load
 {
-	[[LAActivator sharedInstance] registerListener:[self new] forName:@"Caffeine 2"];
+	[[LAActivator sharedInstance] registerListener:[self new] forName:@"am.theiostre.ios-caffeine"];
 }
 @end

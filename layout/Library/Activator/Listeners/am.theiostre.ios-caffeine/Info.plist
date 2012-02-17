@@ -1,0 +1,5 @@
+{
+	title = "Caffeine 2";
+	description = "Stop device from autolocking";
+	"compatible-modes" = ("springboard", "application", "lockscreen");
+}
