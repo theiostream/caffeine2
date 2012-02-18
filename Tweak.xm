@@ -1,68 +1,24 @@
-#import <UIKit/UIKit.h>
-#import <objc/objc.h>
-#import <objc/runtime.h>
-#import <libactivator/libactivator.h>
+#import <libactivator.h>
+#import <libdisplaystack/DSDisplayController.h>
 
-#define SBWPreActivateDisplayStack        [displayStacks objectAtIndex:0]
-#define SBWActiveDisplayStack             [displayStacks objectAtIndex:1]
-#define SBWSuspendingDisplayStack         [displayStacks objectAtIndex:2]
-#define SBWSuspendedEventOnlyDisplayStack [displayStacks objectAtIndex:3]
-
-static NSMutableArray *displayStacks;
-static NSDictionary *dict = [[[NSDictionary alloc] initWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.caffeine2.plist"] autorelease];
 static BOOL caffeineIsOn = NO;
 
-@interface SBApplication : NSObject {}
--(id)displayIdentifier;
-@end
-
-@interface Caffeine2 : NSObject<LAListener> {}
-@end
-
-//======= thx conradev + thezimm
-%hook SBDisplayStack
-
-- (id)init {
-  if ((self = %orig)) {
-    [displayStacks addObject:self];
-  }
-  return self;
-}
-
-- (void)dealloc {
-    [displayStacks removeObject:self];
-    %orig;
-}
-
-%end
-
 %hook SpringBoard
-- (void)applicationDidFinishLaunching:(id)application {
-    displayStacks = [[NSMutableArray arrayWithCapacity:4] retain];
-    %orig;
-}
-//========
 - (void)autoLock {
-	%log;
-	
-	SBApplication *topApp = [SBWActiveDisplayStack topApplication];
+	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.caffeine2.plist"];
+	SBApplication *topApp = [[[DSDisplayController sharedInstance] activeStack] topApplication];
 	
 	if (topApp) {
 		BOOL cofa = [[dict objectForKey:[@"CaffeineIsOn-" stringByAppendingString:[topApp displayIdentifier]]] boolValue];
-	
-		if (!cofa) {
-			if (!caffeineIsOn) %orig;
-		}
+		if (cofa) return;
 	}
 	
-	// springboard crashes if I don't include this. It seems to return nil on -(id)topApplication;
-	else {
-		if ([[[NSBundle mainBundle] bundleIdentifier] isEqualToString:@"com.apple.springboard"])
-			if (!caffeineIsOn) %orig;
-	}
-	
+	if (!caffeineIsOn) %orig;
 }
 %end
+
+@interface Caffeine2 : NSObject <LAListener>
+@end
 
 @implementation Caffeine2
 - (void)activator:(LAActivator *)activator receiveEvent:(LAEvent *)event {
@@ -77,8 +33,11 @@ static BOOL caffeineIsOn = NO;
 	[theAlert release];
 }
 
-+(void)load
-{
++ (void)load {
 	[[LAActivator sharedInstance] registerListener:[self new] forName:@"am.theiostre.ios-caffeine"];
 }
 @end
+
+%ctor {
+	dlopen("/Library/MobileSubstrate/DynamicLibraries/DisplayStack.dylib", RTLD_LAZY);
+}

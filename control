@@ -1,6 +1,6 @@
 Package: am.theiostre.caffeine2
 Name: caffeine2
-Depends: mobilesubstrate
+Depends: mobilesubstrate, com.zimm.libdisplaystack, applist
 Version: 2.0
 Architecture: iphoneos-arm
 Description: An awesome MobileSubstrate tweak!
