@@ -1,17 +1,67 @@
 #import <libactivator.h>
 #import <libdisplaystack/DSDisplayController.h>
 
+@interface SBApplication : NSObject
+- (NSString *)displayIdentifier;
+@end
+
+@interface SBDisplayStack : NSObject
+- (SBApplication *)topApplication;
+@end
+
+@interface BKSWorkspace : NSObject
+- (NSString *)topApplication;
+@end
+
+@interface SBWorkspace : NSObject
+- (BKSWorkspace *)bksWorkspace;
+@end
+
+static SBWorkspace *g_workspace = nil;
+%group SBWorkspaceHooks
+%hook SBWorkspace
+- (id)init {
+	if ((self = %orig)) {
+		if (g_workspace == nil)
+			g_workspace = [self retain];
+	}
+	
+	return self;
+}
+
+- (void)dealloc {
+	if (g_workspace == self) {
+		[g_workspace release];
+		g_workspace = nil;
+	}
+	
+	%orig;
+}
+%end
+%end
+
+#ifndef kCFCoreFoundationVersionNumber_iOS_6_0
+#define kCFCoreFoundationVersionNumber_iOS_6_0 793.00
+#endif
+
 static BOOL caffeineIsOn = NO;
 
 %hook SpringBoard
 - (void)autoLock {
 	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.caffeine2.plist"];
-	SBApplication *topApp = [[[DSDisplayController sharedInstance] activeStack] topApplication];
 	
-	if (topApp) {
-		BOOL cofa = [[dict objectForKey:[@"CaffeineIsOn-" stringByAppendingString:[topApp displayIdentifier]]] boolValue];
-		if (cofa) return;
+	NSString *displayID;
+	if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_6_0) {
+		NSString *topApp = [[g_workspace bksWorkspace] topApplication];
+		displayID = topApp ? topApp : @"com.apple.springboard";
 	}
+	else {
+		SBApplication *topApp = [[(DSDisplayController *)[%c(DSDisplayController) sharedInstance] activeStack] topApplication];
+		displayID = topApp ? [topApp displayIdentifier] : @"com.apple.springboard";
+	}
+	
+	BOOL cofa = [[dict objectForKey:[@"CaffeineIsOn-" stringByAppendingString:displayID]] boolValue];
+	if (cofa) return;
 	
 	if (!caffeineIsOn) %orig;
 }
@@ -31,6 +81,8 @@ static BOOL caffeineIsOn = NO;
 	
 	[theAlert show];
 	[theAlert release];
+	
+	[event setHandled:YES];
 }
 
 + (void)load {
@@ -39,5 +91,10 @@ static BOOL caffeineIsOn = NO;
 @end
 
 %ctor {
-	dlopen("/Library/MobileSubstrate/DynamicLibraries/DisplayStack.dylib", RTLD_LAZY);
+	if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_6_0)
+		%init(SBWorkspaceHooks);
+	else
+		dlopen("/Library/MobileSubstrate/DynamicLibraries/DisplayStack.dylib", RTLD_LAZY);
+	
+	%init;
 }
