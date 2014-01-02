@@ -44,8 +44,13 @@ static SBWorkspace *g_workspace = nil;
 #define kCFCoreFoundationVersionNumber_iOS_6_0 793.00
 #endif
 
+#ifndef kCFCoreFoundationVersionNumber_iOS_7_0
+#define kCFCoreFoundationVersionNumber_iOS_7_0 800.00
+#endif
+
 static BOOL caffeineIsOn = NO;
 
+%group OS6Hooks
 %hook SpringBoard
 - (void)autoLock {
 	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.caffeine2.plist"];
@@ -65,6 +70,30 @@ static BOOL caffeineIsOn = NO;
 	
 	if (!caffeineIsOn) %orig;
 }
+%end
+%end
+
+%group OS7Hooks
+%hook SBBacklightController
+- (void)_autoLockTimerFired:(id)sender {
+	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.caffeine2.plist"];
+	
+	NSString *displayID;
+	if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_6_0) {
+		NSString *topApp = [[g_workspace bksWorkspace] topApplication];
+		displayID = topApp ? topApp : @"com.apple.springboard";
+	}
+	else {
+		SBApplication *topApp = [[(DSDisplayController *)[%c(DSDisplayController) sharedInstance] activeStack] topApplication];
+		displayID = topApp ? [topApp displayIdentifier] : @"com.apple.springboard";
+	}
+	
+	BOOL cofa = [[dict objectForKey:[@"CaffeineIsOn-" stringByAppendingString:displayID]] boolValue];
+	if (cofa) return;
+	
+	if (!caffeineIsOn) %orig;
+}
+%end
 %end
 
 @interface Caffeine2 : NSObject <LAListener>
@@ -96,5 +125,9 @@ static BOOL caffeineIsOn = NO;
 	else
 		dlopen("/Library/MobileSubstrate/DynamicLibraries/DisplayStack.dylib", RTLD_LAZY);
 	
+	if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_7_0)
+		%init(OS7Hooks);
+	else
+		%init(OS6Hooks);
 	%init;
 }
