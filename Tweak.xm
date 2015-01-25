@@ -1,8 +1,10 @@
-#import <libactivator.h>
+#import <libactivator/libactivator.h>
 #import <libdisplaystack/DSDisplayController.h>
+#include <dlfcn.h>
 
 @interface SBApplication : NSObject
 - (NSString *)displayIdentifier;
+- (NSString *)bundleIdentifier;
 @end
 
 @interface SBDisplayStack : NSObject
@@ -15,6 +17,10 @@
 
 @interface SBWorkspace : NSObject
 - (BKSWorkspace *)bksWorkspace;
+@end
+
+@interface UIApplication (Caffeine)
+- (SBApplication *)_accessibilityFrontMostApplication;
 @end
 
 static SBWorkspace *g_workspace = nil;
@@ -79,7 +85,11 @@ static BOOL caffeineIsOn = NO;
 	NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:@"/var/mobile/Library/Preferences/am.theiostre.caffeine2.plist"];
 	
 	NSString *displayID;
-	if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_6_0) {
+	if (kCFCoreFoundationVersionNumber >= 1000) {
+		NSString *topApp = [[[UIApplication sharedApplication] _accessibilityFrontMostApplication] bundleIdentifier];
+		displayID = topApp ?: @"com.apple.springboard";
+	}
+	else if (kCFCoreFoundationVersionNumber >= kCFCoreFoundationVersionNumber_iOS_6_0) {
 		NSString *topApp = [[g_workspace bksWorkspace] topApplication];
 		displayID = topApp ? topApp : @"com.apple.springboard";
 	}
